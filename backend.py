@@ -1,4 +1,4 @@
-result = []
+reports = []
 
 campus_buildings = [
     "Sutherland", "Springhouse", "Woodland", 
@@ -19,15 +19,11 @@ report_template = {
     "category": "",
     "building": "",
     "specific_location": "",
-    "photo": ""
+    "photo": None,
+    "status": "Reported",
+    "priority": False
 }
 
 def create_new_report():
     new_report = report_template.copy()
-    new_report["title"] = ""
-    new_report["description"] = ""
-    new_report["category"] = ""
-    new_report["building"] = ""
-    new_report["specific_location"] = ""
-    new_report["photo"] = ""
     return new_report
