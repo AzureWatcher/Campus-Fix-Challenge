@@ -1,3 +1,5 @@
+result = []
+
 campus_buildings = [
     "Sutherland", "Springhouse", "Woodland", 
     "Rydal", "New Academic", "Cloverly",

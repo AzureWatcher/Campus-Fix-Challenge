@@ -25,31 +25,113 @@ campus_buildings = backend.campus_buildings
 categories = backend.categories
 report_template = backend.report_template
 
-with st.container(border=True, width="stretch", height="stretch"):
-    st.header("Submit a New Report")
-    with st.form(key="report_form"):
-        title = st.text_input("Title", max_chars=100)
-        description = st.text_area("Description", max_chars=500)
-        category = st.selectbox("Category", categories)
-        building = st.selectbox("Building", campus_buildings)
-        specific_location = st.text_input("Specific Location (e.g., Room 101)")
-        photo = st.file_uploader("Upload a Photo (optional)", type=["jpg", "jpeg", "png"])
+def user():
+  col1, col2 = st.columns(2)
 
-        submit_button = st.form_submit_button(label="Submit Report")
+  # with st.container(border=True, width=800, height="content"):
+  with col1:
+      st.header("Submit a New Report")
+      with st.form(key="report_form"):
+          title = st.text_input("Title", max_chars=100)
+          description = st.text_area("Description", max_chars=500)
+          category = st.selectbox("Category", categories)
+          building = st.selectbox("Building", campus_buildings)
+          specific_location = st.text_input("Specific Location (e.g., Room 101)")
+          photo = st.file_uploader("Upload a Photo (optional)", type=["jpg", "jpeg", "png"])
 
-    if submit_button:
-        new_report = backend.create_new_report()
-        new_report["title"] = title
-        new_report["description"] = description
-        new_report["category"] = category
-        new_report["building"] = building
-        new_report["specific_location"] = specific_location
-        new_report["photo"] = photo
+          submit_button = st.form_submit_button(label="Submit Report")
 
-        # Here you would typically save the report to a database or send it to a backend service.
-        # For demonstration purposes, we'll just display the report.
-        st.success("Report submitted successfully!")
-        st.json(new_report)
+      if submit_button:
+          new_report = backend.create_new_report()
+          new_report["title"] = title
+          new_report["description"] = description
+          new_report["category"] = category
+          new_report["building"] = building
+          new_report["specific_location"] = specific_location
+          new_report["photo"] = photo
+
+          st.success("Report submitted successfully!")
+          backend.reports.append(new_report)
+          
+  # with st.container(border=True, width="content", height="content"):
+  with col2:
+      st.header("View Submitted Reports")
+      st.markdown(
+          """
+          <div style="margin-top:-8px; margin-bottom:18px;">
+            <p style="font-size:18px; color:#6b7280; margin:0; max-width:1200px;">
+              Below are the reports submitted by other students. You can filter them by building and category.
+            </p>
+          </div>
+          """,
+          unsafe_allow_html=True,
+      )
+
+      # Placeholder for submitted reports (in a real application, this would be fetched from a database)
+      submitted_reports = [
+          {
+              "title": "Broken Light in Sutherland",
+              "description": "The light in the main hallway is flickering.",
+              "category": "broken light",
+              "building": "Sutherland",
+              "specific_location": "Main Hallway",
+              "photo": None
+          },
+          {
+              "title": "Leaking Tap in Springhouse",
+              "description": "The tap in the bathroom is leaking water.",
+              "category": "leaking tap",
+              "building": "Springhouse",
+              "specific_location": "Bathroom 2",
+              "photo": None
+          },
+          {
+              "title": "Leaking Tap in Springhouse",
+              "description": "The tap in the bathroom is leaking water.",
+              "category": "leaking tap",
+              "building": "Springhouse",
+              "specific_location": "Bathroom 2",
+              "photo": None
+          },
+          {
+              "title": "Leaking Tap in Springhouse",
+              "description": "The tap in the bathroom is leaking water.",
+              "category": "leaking tap",
+              "building": "Springhouse",
+              "specific_location": "Bathroom 2",
+              "photo": None
+          }
+      ]
+
+      # Filters
+      filter_building = st.selectbox("Filter by Building", ["All"] + campus_buildings)
+      filter_category = st.selectbox("Filter by Category", ["All"] + categories)
+
+      filtered_reports = [
+          report for report in submitted_reports
+          if (filter_building == "All" or report["building"] == filter_building) and
+            (filter_category == "All" or report["category"] == filter_category)
+      ]
+
+      for report in filtered_reports:
+          st.subheader(report["title"])
+          st.write(f"**Description:** {report['description']}")
+          st.write(f"**Category:** {report['category']}")
+          st.write(f"**Building:** {report['building']}")
+          st.write(f"**Specific Location:** {report['specific_location']}")
+          if report["photo"]:
+              image = PIL.Image.open(report["photo"])
+              st.image(image, caption="Uploaded Photo", use_column_width=True)
+        
+def admin():
+    st.header("Admin Page")
+    st.write("This is the content of the admin page.")
+
+pg1 = st.Page(user, title = "Submit and View Reports", default = True)
+pg2 = st.Page(admin, title = "Admin Page")
+
+pg = st.navigation([pg1, pg2], position="hidden")
+pg.run()
 
 
 # # Cache the analysis to avoid rerunning it on every page load
