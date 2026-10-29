@@ -28,3 +28,4 @@ def create_new_report():
     new_report["building"] = ""
     new_report["specific_location"] = ""
     new_report["photo"] = ""
+    return new_report
